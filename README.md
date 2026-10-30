@@ -72,6 +72,8 @@ The `product` package uses JPA for catalog persistence. `inventory` and `order` 
 
 ## Tests
 
+The original implementation had exactly **9 tests** (8 integration tests and 1 unit test), verified locally and in CI. The race demonstration adds one regression test; current counts are tracked in [verification status](docs/STATUS.md).
+
 ```sh
 ./mvnw verify
 ```

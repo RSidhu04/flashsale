@@ -48,6 +48,7 @@ class CheckoutIntegrationTest {
     if (POSTGRES.isRunning()) POSTGRES.stop();
   }
 
+  @Autowired org.springframework.transaction.PlatformTransactionManager transactions;
   @Autowired CheckoutService checkout;
   @Autowired ProductService products;
   @Autowired JdbcTemplate jdbc;
@@ -68,6 +69,49 @@ class CheckoutIntegrationTest {
 
   int stock(long product) {
     return products.get(product).available();
+  }
+
+  @Test
+  void naiveReadModifyWriteDeterministicallyOversells() throws Exception {
+    long id = product(1);
+    CountDownLatch bothRead = new CountDownLatch(2);
+    var tx = new org.springframework.transaction.support.TransactionTemplate(transactions);
+    tx.setIsolationLevel(
+        org.springframework.transaction.TransactionDefinition.ISOLATION_READ_COMMITTED);
+    race(
+        2,
+        i ->
+            tx.execute(
+                status -> {
+                  int observed = stock(id);
+                  bothRead.countDown();
+                  try {
+                    if (!bothRead.await(10, TimeUnit.SECONDS))
+                      throw new IllegalStateException("Both readers did not arrive");
+                  } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException(e);
+                  }
+                  // Deliberately broken, test-only: both transactions write the same stale result.
+                  jdbc.update(
+                      "UPDATE inventory SET available = ? WHERE product_id = ?", observed - 1, id);
+                  jdbc.update(
+                      "INSERT INTO orders(product_id,user_id,quantity,status) VALUES (?, ?, 1,"
+                          + " 'CONFIRMED')",
+                      id,
+                      "naive-" + i);
+                  return true;
+                }));
+    System.out.printf(
+        "NAIVE EVIDENCE: starting_stock=1, orders=%d, remaining_stock=%d, oversold_units=%d%n",
+        count("orders"), stock(id), count("orders") - 1);
+    assertThat(stock(id)).isZero();
+    assertThat(count("orders")).isEqualTo(2);
+    // Opt-in failing invariant for a reproducible before/after demonstration.
+    if (Boolean.getBoolean("flashsale.demo.fail"))
+      assertThat(count("orders"))
+          .as("orders must not exceed starting stock")
+          .isLessThanOrEqualTo(1);
   }
 
   @Test
