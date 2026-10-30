@@ -2,6 +2,8 @@
 
 Verified on 2026-10-30:
 
+- [GitHub Actions run 41086560621](https://github.com/RSidhu04/flashsale/actions/runs/41086560621) passed on implementation commit `4ec182153f09d0b5504b9f1ace224bc77234d564`, using the default PostgreSQL 16 Testcontainers path. This verifies the database container tests; it does not verify the app Dockerfile or Compose stack.
+
 - Java 21.0.13; Spring Boot 4.1.2; Maven wrapper build succeeded.
 - `./mvnw -Dflashsale.test.embedded=true verify`: **9 tests, 0 failures, 0 errors, 0 skipped**.
 - The local alternative used real PostgreSQL **14.22**, supplied by the test-only embedded-postgres dependency. It did not use the Compose PostgreSQL 16 container.
@@ -17,9 +19,7 @@ Verified on 2026-10-30:
 
 Not yet verified:
 
-- Default PostgreSQL 16 Testcontainers run: Docker is unavailable in this environment.
 - Docker image build and Compose runtime.
-- GitHub Actions execution (workflow is included; first run pending).
 - k6 workload execution, throughput, p95 or strategy comparison.
 
 Still to implement from the guide:
