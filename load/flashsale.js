@@ -5,6 +5,7 @@ import { Counter, Trend } from 'k6/metrics';
 const attempts = new Counter('checkout_attempts');
 const created = new Counter('orders_created');
 const conflicts = new Counter('checkout_conflicts');
+const contention = new Counter('contention_failures');
 const unexpected = new Counter('unexpected_responses');
 const allLatency = new Trend('checkout_latency', true);
 const successLatency = new Trend('successful_checkout_latency', true);
@@ -14,7 +15,7 @@ const stock = Number(__ENV.STOCK || 100);
 export const options = {
   scenarios: { buyers: { executor: 'shared-iterations', vus: Number(__ENV.VUS || 100), iterations: Number(__ENV.ATTEMPTS || 1000), maxDuration: '5m' } },
   summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)'],
-  thresholds: { checks: ['rate==1'], unexpected_responses: ['count==0'] },
+  thresholds: { checks: ['rate==1'], unexpected_responses: ['count==0'], contention_failures: ['count==0'] },
 };
 export function setup() {
   const response = http.post(`${base}/products`, JSON.stringify({name:'Benchmark',priceCents:1999,stock}), {headers:{'Content-Type':'application/json'}});
@@ -32,7 +33,9 @@ export default function(data) {
   allLatency.add(response.timings.duration);
   // A 409 is expected here only when it specifically means stock depletion.
   const soldOut = response.status === 409 && response.json('detail') === 'Insufficient stock';
-  const valid = response.status === 201 || soldOut;
+  const exhausted = response.status === 503 && response.json('detail') === 'Inventory contention; retry with the same key';
+  const valid = response.status === 201 || soldOut || exhausted;
+  contention.add(exhausted ? 1 : 0);
   check(response, {'expected checkout result': () => valid});
   unexpected.add(valid ? 0 : 1);
   if (response.status === 201) { created.add(1); successLatency.add(response.timings.duration); }
@@ -40,7 +43,7 @@ export default function(data) {
 }
 export function teardown(data) {
   const response = http.get(`${base}/products/${data.productId}`);
-  check(response, {'remaining stock matches expected purchases': r => r.status === 200 && r.json('available') === Math.max(0, stock-Number(__ENV.ATTEMPTS || 1000))});
+  check(response, {'remaining stock is within initial bounds': r => r.status === 200 && r.json('available') >= 0 && r.json('available') <= stock});
   console.log(`Verify SQL conservation for product ${data.productId}.`);
 }
 export function handleSummary(data) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Reproducible local comparison; test-only PostgreSQL launcher, no production data."""
-import argparse, json, os, platform, re, subprocess, time, urllib.request
+import argparse, json, os, platform, re, subprocess, time, urllib.request, urllib.error
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser()
@@ -30,10 +30,19 @@ def run(label,stock,attempts):
  if not match: raise RuntimeError('No product ID: '+label)
  verification=get('/benchmark/verify/'+match.group(1))
  (out/(label+'-sql.json')).write_text(json.dumps(verification,indent=2)+'\n')
- expected=min(stock,attempts)
- assert verification['orders']==verification['units_sold']==verification['idempotencyKeys']==expected,verification
+ metrics=json.loads((out/(label+'.json')).read_text())['metrics']
+ successes=metrics.get('orders_created',{}).get('values',{}).get('count',0)
+ failures=metrics['contention_failures']['values']['count']
+ expected=min(stock,attempts-failures)
+ assert metrics['checkout_attempts']['values']['count']==attempts, 'Incomplete workload'
+ assert metrics['unexpected_responses']['values']['count']==0, 'Unexpected HTTP response'
+ assert verification['orders']==verification['units_sold']==verification['idempotencyKeys']==successes==expected,verification
  assert verification['available']+verification['units_sold']==stock,verification
- if result.returncode: raise RuntimeError(f'k6 thresholds failed ({label}); inspect raw log')
+ if result.returncode not in (0,99): raise RuntimeError(f'k6 execution failed ({label})')
+ if result.returncode == 99 and failures == 0: raise RuntimeError(f'Non-contention threshold failed ({label})')
+ verification['contentionFailures']=failures
+ verification['availabilityPassed']=result.returncode==0
+ (out/(label+'-sql.json')).write_text(json.dumps(verification,indent=2)+'\n')
  return verification
 metadata={'platform':platform.platform(),'processor':platform.machine(),'logicalCpus':os.cpu_count(),'java':subprocess.check_output([java,'-version'],stderr=subprocess.STDOUT,text=True).strip(),'k6':subprocess.check_output([k6,'version'],text=True).strip(),'commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'dirty':bool(subprocess.check_output(['git','status','--porcelain'],text=True).strip()),'settings':{k:v for k,v in vars(a).items() if k not in ('k6','output')},'poolSize':16,'jvmHeap':'512 MiB initial/max','runStartedUtc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'runs':[]}
 (out/'environment.json').write_text(json.dumps(metadata,indent=2)+'\n')
@@ -59,9 +68,10 @@ for round in range(a.rounds):
      name=label+'-'+scenario
      verification=run(name,stock,a.attempts)
      metrics=json.loads((out/(name+'.json')).read_text())['metrics']
-     row={'name':name,'strategy':strategy,'round':round+1,'scenario':scenario,'environment':environment,'sql':verification,'retryConflicts':verification['conflictsTotal']-previous['conflictsTotal'],'exhausted':verification['exhaustedTotal']-previous['exhaustedTotal']}
+     row={'name':name,'strategy':strategy,'round':round+1,'scenario':scenario,'environment':environment,'sql':verification,'retryConflicts':verification['conflictsTotal']-previous['conflictsTotal'],'exhausted':verification['exhaustedTotal']-previous['exhaustedTotal'],'availabilityPassed':verification['availabilityPassed']}
      for metric,key in [('checkout_attempts','rate'),('checkout_latency','p(95)'),('successful_checkout_latency','p(95)')]:
       row[metric+'_'+key]=metrics[metric]['values'][key]
+     assert row['exhausted']==verification['contentionFailures'], 'HTTP and server exhaustion counts disagree'
      metadata['runs'].append(row)
      (out/'environment.json').write_text(json.dumps(metadata,indent=2)+'\n')
      previous=verification
@@ -70,4 +80,5 @@ for round in range(a.rounds):
     server.terminate()
     try: server.wait(timeout=20)
     except subprocess.TimeoutExpired: server.kill();server.wait()
-print('Verified results: '+str(out),flush=True)
+print('Recorded results: '+str(out),flush=True)
+if any(not r['availabilityPassed'] for r in metadata['runs']): raise SystemExit(2)
