@@ -1,16 +1,24 @@
 package com.ravan.flashsale.order;
 
 import com.ravan.flashsale.common.ApiException;
+import com.ravan.flashsale.inventory.InventoryConflictException;
 import com.ravan.flashsale.inventory.InventoryStrategy;
 import com.ravan.flashsale.product.ProductRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.HexFormat;
+import java.util.concurrent.ThreadLocalRandom;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.*;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.annotation.Validated;
 
 @Service
@@ -22,20 +30,58 @@ public class CheckoutService {
   private final ProductRepository products;
   private final InventoryStrategy inventory;
   private final OrderRepository orders;
+  private final TransactionTemplate transaction;
+  private final int maxAttempts;
+  private final Counter conflicts;
+  private final Counter exhausted;
 
   public CheckoutService(
       JdbcTemplate jdbc,
       ProductRepository products,
       InventoryStrategy inventory,
-      OrderRepository orders) {
+      OrderRepository orders,
+      PlatformTransactionManager transactionManager,
+      MeterRegistry meters,
+      @Value("${flashsale.optimistic-max-attempts:32}") int maxAttempts) {
     this.jdbc = jdbc;
     this.products = products;
     this.inventory = inventory;
     this.orders = orders;
+    if (maxAttempts < 1 || maxAttempts > 100)
+      throw new IllegalArgumentException("Retry attempts must be between 1 and 100");
+    this.maxAttempts = maxAttempts;
+    transaction = new TransactionTemplate(transactionManager);
+    transaction.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
+    transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    conflicts = meters.counter("flashsale.checkout.optimistic.conflicts");
+    exhausted = meters.counter("flashsale.checkout.optimistic.exhausted");
   }
 
-  @Transactional(isolation = Isolation.READ_COMMITTED)
   public Result checkout(@NotBlank @Size(max = 100) String key, @Valid CheckoutRequest request) {
+    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return transaction.execute(status -> checkoutOnce(key, request));
+      } catch (InventoryConflictException conflict) {
+        conflicts.increment();
+        if (attempt == maxAttempts) break;
+        // Sleep outside the transaction: no connection/row locks held during backoff.
+        try {
+          Thread.sleep(
+              ThreadLocalRandom.current()
+                  .nextLong(1, Math.min(25, 1L << Math.min(attempt, 5)) + 1));
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          throw new ApiException(
+              HttpStatus.SERVICE_UNAVAILABLE, "Checkout interrupted; retry with the same key");
+        }
+      }
+    }
+    exhausted.increment();
+    throw new ApiException(
+        HttpStatus.SERVICE_UNAVAILABLE, "Inventory contention; retry with the same key");
+  }
+
+  private Result checkoutOnce(String key, CheckoutRequest request) {
     String hash = fingerprint(request);
     // A concurrent insert of the same key waits for the first transaction to finish.
     // DO NOTHING avoids poisoning the transaction with a unique-constraint exception.

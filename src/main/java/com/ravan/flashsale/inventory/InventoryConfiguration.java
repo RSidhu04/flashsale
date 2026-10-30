@@ -12,6 +12,7 @@ public class InventoryConfiguration {
     return switch (strategy) {
       case "atomic" -> new AtomicInventoryStrategy(jdbc);
       case "pessimistic" -> new PessimisticInventoryStrategy(jdbc);
+      case "optimistic" -> new OptimisticInventoryStrategy(jdbc);
       default -> throw new IllegalArgumentException("Unknown inventory strategy: " + strategy);
     };
   }
