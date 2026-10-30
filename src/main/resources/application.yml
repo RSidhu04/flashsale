@@ -24,3 +24,6 @@ management:
       show-details: never
 server:
   address: ${SERVER_ADDRESS:127.0.0.1}
+
+flashsale:
+  inventory-strategy: ${INVENTORY_STRATEGY:atomic}

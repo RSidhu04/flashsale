@@ -1,7 +1,7 @@
 package com.ravan.flashsale.order;
 
 import com.ravan.flashsale.common.ApiException;
-import com.ravan.flashsale.inventory.InventoryRepository;
+import com.ravan.flashsale.inventory.InventoryStrategy;
 import com.ravan.flashsale.product.ProductRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -20,13 +20,13 @@ public class CheckoutService {
 
   private final JdbcTemplate jdbc;
   private final ProductRepository products;
-  private final InventoryRepository inventory;
+  private final InventoryStrategy inventory;
   private final OrderRepository orders;
 
   public CheckoutService(
       JdbcTemplate jdbc,
       ProductRepository products,
-      InventoryRepository inventory,
+      InventoryStrategy inventory,
       OrderRepository orders) {
     this.jdbc = jdbc;
     this.products = products;

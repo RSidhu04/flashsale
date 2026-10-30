@@ -19,18 +19,4 @@ public class InventoryRepository {
     return jdbc.queryForObject(
         "SELECT available FROM inventory WHERE product_id = ?", Integer.class, productId);
   }
-
-  // PostgreSQL locks the row and rechecks the predicate after competing updates commit.
-  public boolean tryReserve(long productId, int quantity) {
-    if (quantity <= 0) throw new IllegalArgumentException("Quantity must be positive");
-    return jdbc.update(
-            """
-            UPDATE inventory SET available = available - ?, version = version + 1
-            WHERE product_id = ? AND available >= ?
-            """,
-            quantity,
-            productId,
-            quantity)
-        == 1;
-  }
 }
