@@ -1,0 +1,927 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "processor": "arm64",
+  "logicalCpus": 10,
+  "java": "openjdk version \"21.0.13\" 2026-10-20 LTS\nOpenJDK Runtime Environment Temurin-21.0.13+9 (build 21.0.13+9-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.13+9 (build 21.0.13+9-LTS, mixed mode, sharing)",
+  "k6": "k6 v2.3.0 (commit/e088784614, go1.26.8, darwin/arm64)",
+  "commit": "ecdcaf8f57b1493a1859eff08000d206addca836",
+  "dirty": false,
+  "settings": {
+    "rounds": 3,
+    "attempts": 10000,
+    "vus": 100,
+    "warmup": 2000
+  },
+  "poolSize": 16,
+  "jvmHeap": "512 MiB initial/max",
+  "runStartedUtc": "2026-10-30T16:52:08Z",
+  "runs": [
+    {
+      "name": "r1-atomic-scarce",
+      "strategy": "atomic",
+      "round": 1,
+      "scenario": "scarce",
+      "environment": {
+        "java": "21.0.13",
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "strategy": "atomic"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 8798.719610322307,
+      "checkout_latency_p(95)": 28.44254999999998,
+      "successful_checkout_latency_p(95)": 39.1899
+    },
+    {
+      "name": "r1-atomic-in-stock",
+      "strategy": "atomic",
+      "round": 1,
+      "scenario": "in-stock",
+      "environment": {
+        "java": "21.0.13",
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "strategy": "atomic"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 10000,
+        "units_sold": 10000,
+        "productId": 3,
+        "idempotencyKeys": 10000,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 3378.9011948470406,
+      "checkout_latency_p(95)": 47.31715,
+      "successful_checkout_latency_p(95)": 47.31715
+    },
+    {
+      "name": "r1-pessimistic-scarce",
+      "strategy": "pessimistic",
+      "round": 1,
+      "scenario": "scarce",
+      "environment": {
+        "strategy": "pessimistic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 9227.433158781056,
+      "checkout_latency_p(95)": 19.680349999999997,
+      "successful_checkout_latency_p(95)": 35.0072
+    },
+    {
+      "name": "r1-pessimistic-in-stock",
+      "strategy": "pessimistic",
+      "round": 1,
+      "scenario": "in-stock",
+      "environment": {
+        "strategy": "pessimistic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 10000,
+        "units_sold": 10000,
+        "productId": 3,
+        "idempotencyKeys": 10000,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 3110.404427225246,
+      "checkout_latency_p(95)": 49.63945,
+      "successful_checkout_latency_p(95)": 49.63945
+    },
+    {
+      "name": "r1-optimistic-scarce",
+      "strategy": "optimistic",
+      "round": 1,
+      "scenario": "scarce",
+      "environment": {
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13",
+        "strategy": "optimistic"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 12803.0,
+        "exhaustedTotal": 14.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 675.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 9601.517807935079,
+      "checkout_latency_p(95)": 28.915299999999995,
+      "successful_checkout_latency_p(95)": 92.22749999999996
+    },
+    {
+      "name": "r1-optimistic-in-stock",
+      "strategy": "optimistic",
+      "round": 1,
+      "scenario": "in-stock",
+      "environment": {
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13",
+        "strategy": "optimistic"
+      },
+      "sql": {
+        "available": 60,
+        "orders": 9940,
+        "units_sold": 9940,
+        "productId": 3,
+        "idempotencyKeys": 9940,
+        "conflictsTotal": 63472.0,
+        "exhaustedTotal": 74.0,
+        "contentionFailures": 60,
+        "availabilityPassed": false
+      },
+      "retryConflicts": 50669.0,
+      "exhausted": 60.0,
+      "availabilityPassed": false,
+      "checkout_attempts_rate": 1702.6852708870103,
+      "checkout_latency_p(95)": 253.26374999999996,
+      "successful_checkout_latency_p(95)": 239.17364999999992
+    },
+    {
+      "name": "r2-pessimistic-scarce",
+      "strategy": "pessimistic",
+      "round": 2,
+      "scenario": "scarce",
+      "environment": {
+        "java": "21.0.13",
+        "strategy": "pessimistic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 8474.971291034752,
+      "checkout_latency_p(95)": 21.188799999999993,
+      "successful_checkout_latency_p(95)": 40.06565
+    },
+    {
+      "name": "r2-pessimistic-in-stock",
+      "strategy": "pessimistic",
+      "round": 2,
+      "scenario": "in-stock",
+      "environment": {
+        "java": "21.0.13",
+        "strategy": "pessimistic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 10000,
+        "units_sold": 10000,
+        "productId": 3,
+        "idempotencyKeys": 10000,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 3506.4478315951287,
+      "checkout_latency_p(95)": 39.82429999999998,
+      "successful_checkout_latency_p(95)": 39.82429999999998
+    },
+    {
+      "name": "r2-optimistic-scarce",
+      "strategy": "optimistic",
+      "round": 2,
+      "scenario": "scarce",
+      "environment": {
+        "strategy": "optimistic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 13083.0,
+        "exhaustedTotal": 15.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 706.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 9488.944430843625,
+      "checkout_latency_p(95)": 27.170199999999962,
+      "successful_checkout_latency_p(95)": 74.78904999999999
+    },
+    {
+      "name": "r2-optimistic-in-stock",
+      "strategy": "optimistic",
+      "round": 2,
+      "scenario": "in-stock",
+      "environment": {
+        "strategy": "optimistic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13"
+      },
+      "sql": {
+        "available": 59,
+        "orders": 9941,
+        "units_sold": 9941,
+        "productId": 3,
+        "idempotencyKeys": 9941,
+        "conflictsTotal": 64938.0,
+        "exhaustedTotal": 74.0,
+        "contentionFailures": 59,
+        "availabilityPassed": false
+      },
+      "retryConflicts": 51855.0,
+      "exhausted": 59.0,
+      "availabilityPassed": false,
+      "checkout_attempts_rate": 1707.4951524212624,
+      "checkout_latency_p(95)": 252.23104999999975,
+      "successful_checkout_latency_p(95)": 241.63
+    },
+    {
+      "name": "r2-atomic-scarce",
+      "strategy": "atomic",
+      "round": 2,
+      "scenario": "scarce",
+      "environment": {
+        "strategy": "atomic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 9204.594197055634,
+      "checkout_latency_p(95)": 27.30599999999998,
+      "successful_checkout_latency_p(95)": 33.13245
+    },
+    {
+      "name": "r2-atomic-in-stock",
+      "strategy": "atomic",
+      "round": 2,
+      "scenario": "in-stock",
+      "environment": {
+        "strategy": "atomic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 10000,
+        "units_sold": 10000,
+        "productId": 3,
+        "idempotencyKeys": 10000,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 3692.9790190782987,
+      "checkout_latency_p(95)": 41.144499999999994,
+      "successful_checkout_latency_p(95)": 41.144499999999994
+    },
+    {
+      "name": "r3-optimistic-scarce",
+      "strategy": "optimistic",
+      "round": 3,
+      "scenario": "scarce",
+      "environment": {
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13",
+        "strategy": "optimistic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ]
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 13179.0,
+        "exhaustedTotal": 16.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 666.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 10008.356978076694,
+      "checkout_latency_p(95)": 27.208749999999984,
+      "successful_checkout_latency_p(95)": 81.38414999999999
+    },
+    {
+      "name": "r3-optimistic-in-stock",
+      "strategy": "optimistic",
+      "round": 3,
+      "scenario": "in-stock",
+      "environment": {
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13",
+        "strategy": "optimistic",
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ]
+      },
+      "sql": {
+        "available": 77,
+        "orders": 9923,
+        "units_sold": 9923,
+        "productId": 3,
+        "idempotencyKeys": 9923,
+        "conflictsTotal": 66641.0,
+        "exhaustedTotal": 93.0,
+        "contentionFailures": 77,
+        "availabilityPassed": false
+      },
+      "retryConflicts": 53462.0,
+      "exhausted": 77.0,
+      "availabilityPassed": false,
+      "checkout_attempts_rate": 1615.415196436911,
+      "checkout_latency_p(95)": 261.4536499999998,
+      "successful_checkout_latency_p(95)": 241.44469999999978
+    },
+    {
+      "name": "r3-atomic-scarce",
+      "strategy": "atomic",
+      "round": 3,
+      "scenario": "scarce",
+      "environment": {
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13",
+        "strategy": "atomic"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 6216.875709112385,
+      "checkout_latency_p(95)": 42.61605,
+      "successful_checkout_latency_p(95)": 35.67825
+    },
+    {
+      "name": "r3-atomic-in-stock",
+      "strategy": "atomic",
+      "round": 3,
+      "scenario": "in-stock",
+      "environment": {
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit",
+        "java": "21.0.13",
+        "strategy": "atomic"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 10000,
+        "units_sold": 10000,
+        "productId": 3,
+        "idempotencyKeys": 10000,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 3391.8794336104047,
+      "checkout_latency_p(95)": 45.22794999999998,
+      "successful_checkout_latency_p(95)": 45.22794999999998
+    },
+    {
+      "name": "r3-pessimistic-scarce",
+      "strategy": "pessimistic",
+      "round": 3,
+      "scenario": "scarce",
+      "environment": {
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "strategy": "pessimistic",
+        "java": "21.0.13",
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 100,
+        "units_sold": 100,
+        "productId": 2,
+        "idempotencyKeys": 100,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 7482.050560704869,
+      "checkout_latency_p(95)": 23.979299999999995,
+      "successful_checkout_latency_p(95)": 45.305749999999996
+    },
+    {
+      "name": "r3-pessimistic-in-stock",
+      "strategy": "pessimistic",
+      "round": 3,
+      "scenario": "in-stock",
+      "environment": {
+        "settings": [
+          {
+            "name": "fsync",
+            "setting": "on"
+          },
+          {
+            "name": "full_page_writes",
+            "setting": "on"
+          },
+          {
+            "name": "max_connections",
+            "setting": "300"
+          },
+          {
+            "name": "shared_buffers",
+            "setting": "16384"
+          },
+          {
+            "name": "synchronous_commit",
+            "setting": "on"
+          }
+        ],
+        "strategy": "pessimistic",
+        "java": "21.0.13",
+        "postgres": "PostgreSQL 14.22 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit"
+      },
+      "sql": {
+        "available": 0,
+        "orders": 10000,
+        "units_sold": 10000,
+        "productId": 3,
+        "idempotencyKeys": 10000,
+        "conflictsTotal": 0.0,
+        "exhaustedTotal": 0.0,
+        "contentionFailures": 0,
+        "availabilityPassed": true
+      },
+      "retryConflicts": 0.0,
+      "exhausted": 0.0,
+      "availabilityPassed": true,
+      "checkout_attempts_rate": 2714.3524098020694,
+      "checkout_latency_p(95)": 62.597199999999944,
+      "successful_checkout_latency_p(95)": 62.597199999999944
+    }
+  ],
+  "publishedCommit": "ec9867f301fedbf106d36d71b6422499351d09f2",
+  "sourceTree": "same file tree as the local commit recorded in commit; GitHub connector created a new commit identity",
+  "hardware": {
+    "chip": "Apple M5",
+    "memoryGiB": 16,
+    "logicalCpus": 10
+  }
+}

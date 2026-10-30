@@ -1,31 +1,21 @@
 # Verification and remaining work
 
-Verified on 2026-10-30:
+## Current verification — 2026-10-30
 
-- [GitHub Actions run 41086560621](https://github.com/RSidhu04/flashsale/actions/runs/41086560621) passed on implementation commit `4ec182153f09d0b5504b9f1ace224bc77234d564`, using the default PostgreSQL 16 Testcontainers path. This verifies the database container tests; it does not verify the app Dockerfile or Compose stack.
+- The original baseline was exactly **9 tests**, confirmed again before these changes.
+- The expanded suite has **30 test executions, 0 failures, 0 errors, 0 skipped** locally and in [PostgreSQL 16 Testcontainers CI](https://github.com/RSidhu04/flashsale/actions/runs/41093602457).
+- Breakdown: 9 inherited integration tests for each of atomic/pessimistic/optimistic (27), two optimistic-retry tests (2), and fingerprint unit test (1). These are 30 executions, not 30 distinct scenarios.
+- Local test alternative uses PostgreSQL 14.22; CI uses PostgreSQL 16. Java 21.0.13 / Spring Boot 4.1.2.
+- [Naive race evidence](NAIVE_RACE.md): two orders for one item; intentional no-oversell assertion fails. Normal CI asserts the reproducible broken outcome and remains green.
+- All strategies pass the 1,000-attempt/100-stock check, idempotency, duplicate-buyer, rollback, multi-unit and HTTP contract cases. Optimistic retry recovery and rollback after exhaustion are tested separately.
+- [18 measured k6 runs](benchmarks/RESULTS.md), 180,000 measured checkout attempts, plus excluded warmups. Stock conservation verified for every run.
+- Atomic and pessimistic: no failed purchases. Optimistic: 196 total 503s across the three in-stock runs; all writes rolled back, no overselling. The benchmark availability threshold intentionally remains failed for those results.
+- Separate commits preserve the race demonstration, pessimistic strategy, optimistic strategy, benchmark runner, contention-failure recording and measured report.
 
-- Java 21.0.13; Spring Boot 4.1.2; Maven wrapper build succeeded.
-- `./mvnw -Dflashsale.test.embedded=true verify`: **9 tests, 0 failures, 0 errors, 0 skipped**.
-- The local alternative used real PostgreSQL **14.22**, supplied by the test-only embedded-postgres dependency. It did not use the Compose PostgreSQL 16 container.
-- 1,000 concurrent-task purchase attempts on 64 worker threads with stock 100: 100 successful orders, 100 committed keys, zero stock remaining.
-- 20 concurrent identical retries: one new order, all responses refer to it, stock decremented once.
-- Conflicting payload/user for an existing key rejected without changing stock.
-- A duplicate buyer using a new key rolls back its stock reservation and key.
-- Concurrent different keys for one buyer create one order.
-- Missing products and insufficient stock leave no order or key.
-- Multi-unit purchases conserve inventory (33 orders of 3 units, 1 remaining from 100).
-- HTTP validation and 201 / 200 replay / 400 / 409 semantics exercised.
-- Fingerprint binding checked with a unit test.
+## Remaining work
 
-Not yet verified:
-
-- Docker image build and Compose runtime.
-- k6 workload execution, throughput, p95 or strategy comparison.
-
-Still to implement from the guide:
-
-- Captured naive-race demonstration and pessimistic/optimistic strategy comparison.
 - Redis gate, compensation plus crash recovery, and rate limiting.
-- Application-specific Micrometer counters and expanded failure injection.
-- Authentication/authorization before shared deployment; distinct sale model if products can be sold in multiple sales.
-- Optional advanced extensions only after the core experiments.
+- Docker image build and Compose runtime verification.
+- Longer sustained/deployed-environment benchmarks; current measurements are short local bursts.
+- Broader application metrics, authentication/authorization and deployment hardening.
+- Distinct sale model for repeat sales and optional advanced extensions.

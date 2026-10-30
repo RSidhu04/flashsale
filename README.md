@@ -8,11 +8,11 @@ A Java 21 / Spring Boot 4.1.2 portfolio project exploring correct checkout when 
 
 - Maven wrapper; Spring Web MVC, Data JPA, Validation, Flyway, PostgreSQL, Actuator.
 - Product creation/read, checkout, order read.
-- Atomic conditional stock update inside the order transaction.
+- Selectable atomic, pessimistic and optimistic inventory reservation inside the order transaction.
 - Idempotency keys, request fingerprint validation, one order per user per product.
 - PostgreSQL concurrency tests; GitHub Actions runs the full suite with Testcontainers.
 - Docker Compose for PostgreSQL 16 and Redis 7, optional app image.
-- k6 workload and SQL conservation check. **No throughput or latency results have been measured.**
+- k6 strategy comparison with SQL conservation checks; see [measured results](docs/benchmarks/RESULTS.md).
 
 Redis is provisioned for a later phase and is not used by checkout yet. This is a local educational API: user IDs are caller-supplied, and authentication/authorization are not implemented. Keep it on localhost until those controls exist. Product identity currently also represents sale identity; repeated sales need a separate sale model.
 
@@ -64,7 +64,7 @@ Malformed requests, missing keys and invalid fields return 400 using Spring Prob
 4. Insert the order, enforce the unique `(product_id, user_id)` constraint, and attach the order to the key.
 5. Commit all changes together. Any failure rolls back the stock, order and new key.
 
-The service explicitly uses READ COMMITTED. PostgreSQL rechecks the update predicate after waiting on another updater. A nonnegative stock constraint provides another defense against invalid stock, but **that constraint alone does not prevent lost updates in a naive read-modify-write implementation**.
+The service explicitly uses READ COMMITTED. Set `INVENTORY_STRATEGY=atomic` (default), `pessimistic`, or `optimistic` before startup. Optimistic compare-and-set conflicts roll back and retry the entire transaction up to 32 times with jitter; exhaustion returns 503 and can be retried with the same key. PostgreSQL rechecks the update predicate after waiting on another updater. A nonnegative stock constraint provides another defense against invalid stock, but **that constraint alone does not prevent lost updates in a naive read-modify-write implementation**.
 
 Only successful orders retain idempotency keys. Failed requests may be retried and reevaluated. Keys are global and retained indefinitely in this version. Authenticated ownership, expiry and privacy controls remain future work.
 
@@ -72,7 +72,7 @@ The `product` package uses JPA for catalog persistence. `inventory` and `order` 
 
 ## Tests
 
-The original implementation had exactly **9 tests** (8 integration tests and 1 unit test), verified locally and in CI. The race demonstration adds one regression test; current counts are tracked in [verification status](docs/STATUS.md).
+The original implementation had exactly **9 tests** (8 integration tests and 1 unit test). The expanded suite has **30 passing test executions**: the 9-test contract runs for all three strategies, plus 2 optimistic-retry tests and 1 fingerprint unit test. See [verification status](docs/STATUS.md).
 
 ```sh
 ./mvnw verify
@@ -88,32 +88,20 @@ On a development machine without Docker, this explicit alternative runs the same
 
 The alternative does not verify Docker Compose or the PostgreSQL 16 container image. See [verification status](docs/STATUS.md) for what has actually run.
 
-## Benchmark scaffolding
+## Measured strategy comparison
 
-With k6 installed and the API running:
+See [results and raw evidence](docs/benchmarks/RESULTS.md), [benchmark instructions](load/README.md), and [the captured naive-race failure](docs/NAIVE_RACE.md). The benchmark records successful-checkout latency separately from sold-out responses and explicitly reports optimistic retry-exhaustion failures. It verifies inventory conservation in SQL after each run.
 
 ```sh
-mkdir -p load/results
-k6 run --summary-export=load/results/atomic.json load/flashsale.js
-# Larger experiment:
-VUS=500 ATTEMPTS=10000 STOCK=100 k6 run load/flashsale.js
+python3 load/run-local.py --rounds 3 --vus 100 --attempts 10000 --warmup 2000
 ```
 
-Each run creates a fresh product and uses unique buyers/keys. Record hardware, Java/PostgreSQL versions, connection pool, warmup, duration, commit SHA and k6 settings. Inspect the checkout-tagged latency, successful orders and expected conflicts separately. Sold-out 409s are expected business outcomes, although k6's generic HTTP error metric counts them as failures. The checks threshold fails on unexpected responses.
-
-Run `load/verify.sql` with the printed product ID using psql. Confirm `available + units_sold = starting_stock`; when attempts exceed stock with quantity one, expect 100 orders and zero remaining stock. HTTP status counts alone are not a correctness proof.
-
-| Strategy | Correctness suite | Throughput | p95 |
-| --- | --- | --- | --- |
-| Atomic update | See verification status | Not measured | Not measured |
-| Pessimistic / optimistic / Redis gate | Not implemented | Not measured | Not measured |
+This local harness needs Java 21, Python 3, k6 and a free port 8080. It uses a test-only PostgreSQL process with durability enabled. Results describe this development host, not production capacity.
 
 ## Next phases from the build guide
 
-- Controlled naive-race experiment with captured failing evidence (test/demo only).
-- Pessimistic and optimistic strategies behind an interface; compare under identical workloads.
 - Redis Lua gate, failure recovery/reconciliation and rate limiting.
-- Measured benchmarks, custom Micrometer counters, deployment hardening.
+- Longer duration/deployed-environment benchmarks, expanded observability and deployment hardening.
 - Only then consider Kafka/outbox, reservation expiry or a storefront.
 
-No resume claim about throughput, latency or Redis offload is supported yet. See [NOTES.md](NOTES.md) for the learning checklist.
+Use measured numbers only with their workload and local-environment qualifications. Redis offload is not implemented. See [interview preparation](docs/INTERVIEW_PREP.md) and [NOTES.md](NOTES.md).
