@@ -1,0 +1,9 @@
+target/
+.env
+.env.*
+!.env.example
+.idea/
+*.iml
+.DS_Store
+.vscode/
+load/results/
