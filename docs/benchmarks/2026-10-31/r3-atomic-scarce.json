@@ -1,0 +1,304 @@
+{
+  "state": {
+    "isStdOutTTY": false,
+    "isStdErrTTY": false,
+    "testRunDurationMs": 951.545
+  },
+  "metrics": {
+    "http_req_failed": {
+      "values": {
+        "passes": 0,
+        "fails": 10002,
+        "rate": 0
+      },
+      "type": "rate",
+      "contains": "default"
+    },
+    "iteration_duration": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "med": 7.2651045,
+        "max": 104.083208,
+        "p(95)": 28.99815835,
+        "p(99)": 43.52631766999999,
+        "avg": 9.38645356909998,
+        "min": 0.475959
+      }
+    },
+    "contention_failures": {
+      "values": {
+        "count": 0,
+        "rate": 0
+      },
+      "thresholds": {
+        "count==0": {
+          "ok": true
+        }
+      },
+      "type": "counter",
+      "contains": "default"
+    },
+    "unexpected_responses": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "rate": 0,
+        "count": 0
+      },
+      "thresholds": {
+        "count==0": {
+          "ok": true
+        }
+      }
+    },
+    "checks": {
+      "values": {
+        "fails": 0,
+        "rate": 1,
+        "passes": 10001
+      },
+      "thresholds": {
+        "rate==1": {
+          "ok": true
+        }
+      },
+      "type": "rate",
+      "contains": "default"
+    },
+    "checkout_latency": {
+      "contains": "time",
+      "values": {
+        "avg": 8.505016400000033,
+        "min": 0.351,
+        "med": 6.6175,
+        "max": 92.561,
+        "p(95)": 27.685,
+        "p(99)": 42.16214
+      },
+      "type": "trend"
+    },
+    "http_req_connecting": {
+      "contains": "time",
+      "values": {
+        "avg": 0.011377724455108975,
+        "min": 0,
+        "med": 0,
+        "max": 11.017,
+        "p(95)": 0,
+        "p(99)": 0.377
+      },
+      "type": "trend"
+    },
+    "sold_out_latency": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 8.352053939393961,
+        "min": 0.351,
+        "med": 6.5275,
+        "max": 92.561,
+        "p(95)": 26.85614999999999,
+        "p(99)": 42.179779999999965
+      }
+    },
+    "http_reqs": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 10002,
+        "rate": 10511.326316674462
+      }
+    },
+    "http_req_duration": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "med": 6.617,
+        "max": 92.561,
+        "p(95)": 27.682599999999976,
+        "p(99)": 42.16150999999999,
+        "avg": 8.503638172365559,
+        "min": 0.351
+      }
+    },
+    "http_req_tls_handshaking": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 0,
+        "min": 0,
+        "med": 0,
+        "max": 0,
+        "p(95)": 0,
+        "p(99)": 0
+      }
+    },
+    "http_req_waiting": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 7.902486802639499,
+        "min": 0.336,
+        "med": 6.3985,
+        "max": 92.552,
+        "p(95)": 23.0549,
+        "p(99)": 40.40829999999999
+      }
+    },
+    "http_req_sending": {
+      "contains": "time",
+      "values": {
+        "max": 51.768,
+        "p(95)": 0.025,
+        "p(99)": 0.3376699999999971,
+        "avg": 0.07451799640072139,
+        "min": 0.001,
+        "med": 0.004
+      },
+      "type": "trend"
+    },
+    "iterations": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 10000,
+        "rate": 10509.224471780106
+      }
+    },
+    "http_req_duration{expected_response:true}": {
+      "contains": "time",
+      "values": {
+        "min": 0.351,
+        "med": 6.617,
+        "max": 92.561,
+        "p(95)": 27.682599999999976,
+        "p(99)": 42.16150999999999,
+        "avg": 8.503638172365559
+      },
+      "type": "trend"
+    },
+    "successful_checkout_latency": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(95)": 37.72815,
+        "p(99)": 39.93893,
+        "avg": 23.6483,
+        "min": 2.369,
+        "med": 24.988,
+        "max": 41.417
+      }
+    },
+    "http_req_blocked": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 0.02603479304139435,
+        "min": 0,
+        "med": 0.001,
+        "max": 20.764,
+        "p(95)": 0.003,
+        "p(99)": 0.5269399999999995
+      }
+    },
+    "data_received": {
+      "type": "counter",
+      "contains": "data",
+      "values": {
+        "count": 2196522,
+        "rate": 2308374.275520338
+      }
+    },
+    "http_req_receiving": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "avg": 0.5266333733253414,
+        "min": 0.003,
+        "med": 0.011,
+        "max": 90.856,
+        "p(95)": 0.6997499999999978,
+        "p(99)": 15.976709999999997
+      }
+    },
+    "data_sent": {
+      "type": "counter",
+      "contains": "data",
+      "values": {
+        "rate": 2204878.3819998004,
+        "count": 2098041
+      }
+    },
+    "orders_created": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 100,
+        "rate": 105.09224471780105
+      }
+    },
+    "checkout_attempts": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 10000,
+        "rate": 10509.224471780106
+      }
+    },
+    "checkout_conflicts": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 9900,
+        "rate": 10404.132227062304
+      }
+    }
+  },
+  "setup_data": {
+    "productId": 2
+  },
+  "root_group": {
+    "name": "",
+    "path": "",
+    "id": "d41d8cd98f00b204e9800998ecf8427e",
+    "groups": [
+      {
+        "name": "teardown",
+        "path": "::teardown",
+        "id": "a8a9942382e8ffe2e56ef29e664b8229",
+        "groups": [],
+        "checks": [
+            {
+              "name": "remaining stock is within initial bounds",
+              "path": "::teardown::remaining stock is within initial bounds",
+              "id": "5835d779a931f38543bfd63aaa9c1ea1",
+              "passes": 1,
+              "fails": 0
+            }
+          ]
+      }
+    ],
+    "checks": [
+      {
+        "name": "expected checkout result",
+        "path": "::expected checkout result",
+        "id": "0918c15d75565a13430c5a6ee94b2278",
+        "passes": 10000,
+        "fails": 0
+      }
+    ]
+  },
+  "options": {
+    "summaryTimeUnit": "",
+    "noColor": true,
+    "summaryTrendStats": [
+      "avg",
+      "min",
+      "med",
+      "max",
+      "p(95)",
+      "p(99)"
+    ]
+  }
+}

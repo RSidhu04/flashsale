@@ -1,6 +1,12 @@
 # Verification and remaining work
 
-## Current verification — 2026-10-30
+## Repeat verification — 2026-10-31
+
+- Reran all 30 local test executions: 0 failures, 0 errors, 0 skips.
+- Repeated the same 18 k6 workloads, preserving the original measurements. See [repeat results](benchmarks/REPEAT-2026-10-31.md) for every run, stock checks and explicit availability failures.
+- No application or benchmark-setting changes were made for the repeat.
+
+## Original verification — 2026-10-30
 
 - The original baseline was exactly **9 tests**, confirmed again before these changes.
 - The expanded suite has **30 test executions, 0 failures, 0 errors, 0 skipped** locally and in [PostgreSQL 16 Testcontainers CI](https://github.com/RSidhu04/flashsale/actions/runs/41093602457).

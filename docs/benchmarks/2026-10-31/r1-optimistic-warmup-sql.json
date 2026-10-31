@@ -1,0 +1,11 @@
+{
+  "available": 12,
+  "orders": 1988,
+  "units_sold": 1988,
+  "productId": 1,
+  "idempotencyKeys": 1988,
+  "conflictsTotal": 11640.0,
+  "exhaustedTotal": 12.0,
+  "contentionFailures": 12,
+  "availabilityPassed": false
+}

@@ -1,5 +1,7 @@
 # Local k6 comparison — 2026-10-30
 
+A [repeat run on 2026-10-31](REPEAT-2026-10-31.md) preserves a second full set of measurements without changing code or settings.
+
 All 18 measured workloads completed and conserved stock. Atomic and pessimistic locking had no failed purchases. Optimistic locking returned retry-exhaustion 503s in every all-in-stock run, so its zero-contention availability threshold failed. The harness exited **2** to preserve that failure; the correctness suite remains green.
 
 ## Environment and method

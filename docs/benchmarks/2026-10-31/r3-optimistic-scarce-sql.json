@@ -1,0 +1,11 @@
+{
+  "available": 0,
+  "orders": 100,
+  "units_sold": 100,
+  "productId": 2,
+  "idempotencyKeys": 100,
+  "conflictsTotal": 12638.0,
+  "exhaustedTotal": 13.0,
+  "contentionFailures": 0,
+  "availabilityPassed": true
+}

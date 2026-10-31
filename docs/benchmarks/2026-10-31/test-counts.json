@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-31",
+  "commit": "c21ddf13021e9948f840beaa4cf2c9727777ab99",
+  "command": "./mvnw -B -Dflashsale.test.embedded=true verify",
+  "suites": [
+    {
+      "name": "com.ravan.flashsale.CheckoutIntegrationTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.ravan.flashsale.OptimisticCheckoutIntegrationTest",
+      "tests": "11",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.ravan.flashsale.PessimisticCheckoutIntegrationTest",
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.ravan.flashsale.order.CheckoutFingerprintTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ]
+}
