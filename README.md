@@ -70,6 +70,13 @@ Only successful orders retain idempotency keys. Failed requests may be retried a
 
 The `product` package uses JPA for catalog persistence. `inventory` and `order` use explicit SQL for the concurrency-sensitive operations. Spring's transaction manager shares the same database transaction with the JDBC operations. `common` holds API errors. See [the walkthrough](docs/WALKTHROUGH.md).
 
+## Verified results
+
+- **1,000 purchase attempts across 64 worker threads → exactly 100 orders for 100 items**, with zero stock remaining. See [`thousandBuyersCompeteForOneHundredItems`](src/test/java/com/ravan/flashsale/CheckoutIntegrationTest.java#L118).
+- **20 simultaneous retries with one idempotency key → exactly one order**, with stock decremented only once. See [`twentyConcurrentRetriesReturnOneOrder`](src/test/java/com/ravan/flashsale/CheckoutIntegrationTest.java#L139).
+
+Both checks run against the atomic, pessimistic and optimistic strategies. The full suite has 30 passing test executions; see [verification details](docs/STATUS.md).
+
 ## Tests
 
 The original implementation had exactly **9 tests** (8 integration tests and 1 unit test). The expanded suite has **30 passing test executions**: the 9-test contract runs for all three strategies, plus 2 optimistic-retry tests and 1 fingerprint unit test. See [verification status](docs/STATUS.md).
@@ -98,7 +105,7 @@ python3 load/run-local.py --rounds 3 --vus 100 --attempts 10000 --warmup 2000
 
 This local harness needs Java 21, Python 3, k6 and a free port 8080. It uses a test-only PostgreSQL process with durability enabled. Results describe this development host, not production capacity.
 
-## Next phases from the build guide
+## Roadmap
 
 - Redis Lua gate, failure recovery/reconciliation and rate limiting.
 - Longer duration/deployed-environment benchmarks, expanded observability and deployment hardening.
